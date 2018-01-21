@@ -105,7 +105,7 @@ human = lambda player: transform[int(input("Where do you want to play, " +
 cpu_easy = lambda player: random.choice(squares(N))
 
 def cpu_medium(player):
-    abt = about_to_win(player) or about_to_win(other_player(player))
+    abt = about_to_win(player) or about_to_win(other(player))
     if abt: return abt
 
     if all(x is N for x in board):
