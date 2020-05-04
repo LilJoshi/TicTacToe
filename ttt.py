@@ -1,6 +1,8 @@
 ### Tic-Tac-Toe, via 3x3 Magic Square (numbers 0-8)
 ### X is always first player
 
+## please add a little documentation
+
 import random
 
 #Players
@@ -58,11 +60,11 @@ def quickdraw():
 # draw = lambda: squares(N) == []
 
 def about_to_win(player):
-    """ Yields position of move where player is about to win, otherwise False. """
+    """ Yields position of move where player is about to win, otherwise -1. """
     for move in squares(N):
-        if any(sum(trip) == 12 - move for trip in doubles(squares(player))):
+        if any(sum(doub) == 12 - move for doub in doubles(squares(player))):
             return move
-    return False
+    return -1
 
 def turn():
     return X if squares(N) % 2 == 1 else O
@@ -105,24 +107,34 @@ human = lambda player: transform[int(input("Where do you want to play, " +
 cpu_easy = lambda player: random.choice(squares(N))
 
 def cpu_medium(player):
-    abt = about_to_win(player) or about_to_win(other(player))
-    if abt: return abt
+    abt1 = about_to_win(player)
+    abt = abt1 if (abt1 >= 0) else about_to_win(other(player))
+    if abt >= 0: return abt
 
     if all(x is N for x in board):
         return random.choice(corners)
     elif board[4] is N:
         return 4
     else:
-        return random.choice(squares(N))
+        return cpu_easy(player)
 
-cpu = cpu_easy
+def fork_counter(player, move):
+    # move cannot be in squares(player), hopefully in squares(N)
+    # not complete
+    counter = 0
+    for doub in doubles(squares(player)+[move]): #change to doubles containing move
+        i = 12 - sum(doub)
+        if i in squares(N) and i != move:
+            counter += 1
+    return counter
+
+cpu = cpu_medium
 simulation_game = lambda: run_game(cpu, cpu)
 two_players = lambda: run_game(human, human)
 single_player_as_x = lambda: run_game(human, cpu)
 single_player_as_o = lambda: run_game(cpu, human)
 
 def main():
-    single_player_as_x()
+    simulation_game()
 
-main()
-    
+#main()
